@@ -1,10 +1,9 @@
 const startBtn = document.getElementById('start');
 const canvas = document.getElementById('visualizer');
 const canvasCtx = canvas.getContext('2d');
+const transcriptBox = document.getElementById('transcript');
 
 let source, audioContext;
-
-const badWords = ["anjing", "kontol", "bangsat", "memek", "fuck", "shit", "nigga", "nigger", "bitch", "bastard"];
 
 startBtn.addEventListener('click', async () => {
   try {
@@ -49,7 +48,7 @@ startBtn.addEventListener('click', async () => {
 
     draw();
 
-    // Speech recognition setup
+    // Speech recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert("Browser kamu tidak mendukung Speech Recognition.");
@@ -61,15 +60,8 @@ startBtn.addEventListener('click', async () => {
     recognition.lang = 'id-ID';
 
     recognition.onresult = (event) => {
-      const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
-      console.log("Terucap:", transcript);
-      if (badWords.some(word => transcript.includes(word))) {
-        console.warn("Kata kasar terdeteksi, mute mic sementara!");
-        source.disconnect(audioContext.destination);
-        setTimeout(() => {
-          source.connect(audioContext.destination);
-        }, 3000);
-      }
+      const latestTranscript = event.results[event.results.length - 1][0].transcript;
+      transcriptBox.value += latestTranscript + " ";
     };
 
     recognition.onerror = (err) => {
@@ -77,7 +69,7 @@ startBtn.addEventListener('click', async () => {
     };
 
     recognition.start();
-    alert("Mic & sensor aktif. Ucapkan sesuatu...");
+    alert("Mic & transkrip aktif. Ngomong aja, teksnya muncul realtime.");
   } catch (err) {
     alert("Gagal akses mic: " + err.message);
     console.error(err);
