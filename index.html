@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mic Test + Anti-Toxic</title>
+  <title>Mic Transkrip Live</title>
   <style>
     body {
       font-family: sans-serif;
@@ -27,17 +27,31 @@
     }
     canvas {
       display: block;
-      margin: 30px auto 0;
+      margin: 30px auto 20px;
       border-radius: 12px;
       background-color: #1e293b;
+    }
+    textarea {
+      width: 90%;
+      max-width: 800px;
+      height: 150px;
+      margin: 0 auto;
+      display: block;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1em;
+      background: #e2e8f0;
+      color: #0f172a;
+      resize: none;
     }
   </style>
 </head>
 <body>
-  <h1>🎧 Mic Test + Anti-Toxic Mode</h1>
-  <p>Ngomong mic langsung feedback + sensor otomatis kata kasar</p>
+  <h1>🎧 Mic Test + Transkrip Langsung</h1>
+  <p>Ngomong, lihat gelombang suara & teks yang muncul realtime.</p>
   <button id="start">🎤 Mulai Tes Mic</button>
   <canvas id="visualizer" width="800" height="200"></canvas>
+  <textarea id="transcript" placeholder="Kata-kata yang kamu ucap akan muncul di sini..."></textarea>
 
   <script src="script.js"></script>
 </body>
