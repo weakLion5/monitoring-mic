@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mic Test + Waveform</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 40px;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      background: #4f46e5;
+      color: white;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #4338ca;
+    }
+    canvas {
+      display: block;
+      margin: 30px auto 0;
+      border-radius: 12px;
+      background-color: #1e293b;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎧 Mic Test + Visualisasi Gelombang</h1>
+  <p>Tekan tombol, izinkan akses mic, dan lihat gelombang suaramu!</p>
+  <button id="start">🎤 Mulai Tes Mic</button>
+  <canvas id="visualizer" width="800" height="200"></canvas>
+
+  <script>
+    const startBtn = document.getElementById('start');
+    const canvas = document.getElementById('visualizer');
+    const canvasCtx = canvas.getContext('2d');
+
+    startBtn.addEventListener('click', async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const audioContext = new AudioContext();
+        const source = audioContext.createMediaStreamSource(stream);
+        const analyser = audioContext.createAnalyser();
+
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+
+        analyser.fftSize = 2048;
+        const bufferLength = analyser.fftSize;
+        const dataArray = new Uint8Array(bufferLength);
+
+        function draw() {
+          requestAnimationFrame(draw);
+          analyser.getByteTimeDomainData(dataArray);
+          canvasCtx.fillStyle = '#1e293b';
+          canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+          canvasCtx.lineWidth = 2;
+          canvasCtx.strokeStyle = '#22d3ee';
+          canvasCtx.beginPath();
+
+          const sliceWidth = canvas.width / bufferLength;
+          let x = 0;
+
+          for (let i = 0; i < bufferLength; i++) {
+            const v = dataArray[i] / 128.0;
+            const y = v * canvas.height / 2;
+            if (i === 0) {
+              canvasCtx.moveTo(x, y);
+            } else {
+              canvasCtx.lineTo(x, y);
+            }
+            x += sliceWidth;
+          }
+
+          canvasCtx.lineTo(canvas.width, canvas.height / 2);
+          canvasCtx.stroke();
+        }
+
+        draw();
+        alert("Mic aktif dan visualisasi jalan. Coba ngomong, liat gelombangnya!");
+      } catch (err) {
+        alert("Gagal akses mic: " + err.message);
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
